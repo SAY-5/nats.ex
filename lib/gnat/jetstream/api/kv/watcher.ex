@@ -90,7 +90,7 @@ defmodule Gnat.Jetstream.API.KV.Watcher do
 
   defp subscribe(conn, bucket_name, inbox_prefix) do
     stream = KV.stream_name(bucket_name)
-    inbox = Util.reply_inbox(inbox_prefix)
+    inbox = Util.reply_inbox(conn, inbox_prefix)
     consumer_name = "all_key_values_watcher_#{Util.nuid()}"
 
     with {:ok, sub} <- Gnat.sub(conn, self(), inbox),

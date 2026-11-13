@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased (next major)
+
+* **Behavior change:** `Gnat.Jetstream.API.Object.get/5`, `Object.list/3`, `Gnat.Jetstream.Pager.init/3` and `Gnat.Jetstream.API.KV.watch/4` now deliver to a subject under the connection's `inbox_prefix` instead of always using `_INBOX.`, which matches the other official clients. The `:inbox_prefix` option from #249 still overrides it, so pass `inbox_prefix: "_INBOX."` to keep the old subjects. See #242
+* New `Gnat.inbox_prefix/1` returns the `inbox_prefix` a connection was started with.
+
 ## 1.19.1
 
 * Drop the dependency on the `connection` library and replace it with the `gen_statem` standard library. #248

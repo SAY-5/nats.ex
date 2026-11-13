@@ -51,6 +51,9 @@ defmodule Gnat.Jetstream.API.Util do
   def reply_inbox(nil), do: reply_inbox()
   def reply_inbox(prefix), do: prefix <> nuid()
 
+  def reply_inbox(conn, nil), do: reply_inbox(Gnat.inbox_prefix(conn))
+  def reply_inbox(_conn, prefix), do: reply_inbox(prefix)
+
   def nuid() do
     :crypto.strong_rand_bytes(12) |> Base.url_encode64()
   end

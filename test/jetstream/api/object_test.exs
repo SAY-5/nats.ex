@@ -283,6 +283,20 @@ defmodule Gnat.Jetstream.API.ObjectTest do
       :ok = Gnat.unsub(:gnat, sub)
       assert :ok = Object.delete_bucket(:gnat, bucket)
     end
+
+    test "delivers chunks under the connection's inbox_prefix by default" do
+      bucket = nuid()
+      assert {:ok, _} = Object.create_bucket(:gnat, bucket)
+      assert {:ok, meta} = put_binary("data", bucket, "prefixed")
+      {:ok, conn} = Gnat.start_link(%{inbox_prefix: "conn_prefix."})
+      {:ok, sub} = Gnat.sub(conn, self(), "conn_prefix.>")
+
+      assert :ok = Object.get(conn, bucket, meta.name, fn _ -> :ok end)
+
+      assert_receive {:msg, %{sid: ^sub, body: "data"}}
+      :ok = Gnat.stop(conn)
+      assert :ok = Object.delete_bucket(:gnat, bucket)
+    end
   end
 
   describe "info/3" do

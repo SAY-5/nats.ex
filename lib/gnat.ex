@@ -532,6 +532,14 @@ defmodule Gnat do
     GenServer.call(name, :server_info)
   end
 
+  @doc """
+  Get the `inbox_prefix` the connection was started with (`"_INBOX."` by default).
+  """
+  @spec inbox_prefix(t()) :: String.t()
+  def inbox_prefix(name) do
+    GenServer.call(name, :inbox_prefix)
+  end
+
   @impl {:format_status, 1} in GenServer.behaviour_info(:callbacks)
   def format_status(status), do: Gnat.Redaction.redact(status)
 
@@ -728,6 +736,10 @@ defmodule Gnat do
 
   def handle_call(:server_info, _from, state) do
     {:reply, state.server_info, state}
+  end
+
+  def handle_call(:inbox_prefix, _from, state) do
+    {:reply, state.connection_settings.inbox_prefix, state}
   end
 
   defp unsub_sid(sid, opts, state) do

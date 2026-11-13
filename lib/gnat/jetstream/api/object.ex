@@ -77,7 +77,7 @@ defmodule Gnat.Jetstream.API.Object do
       the deadline, but callbacks aren't interrupted. Defaults to `:infinity`.
 
     * `:inbox_prefix` - (string) the prefix for the subject the chunks are delivered
-      to. Should end with a dot. Defaults to `"_INBOX."`.
+      to. Should end with a dot. Defaults to the connection's `inbox_prefix`.
   """
   @spec get(Gnat.t(), String.t(), String.t(), (binary -> any()), keyword()) ::
           :ok | {:error, any}
@@ -128,14 +128,14 @@ defmodule Gnat.Jetstream.API.Object do
       limited by both this deadline and `:timeout`. Defaults to `:infinity`.
 
     * `:inbox_prefix` - (string) the prefix for the subject the metadata is delivered
-      to. Should end with a dot. Defaults to `"_INBOX."`.
+      to. Should end with a dot. Defaults to the connection's `inbox_prefix`.
   """
   @spec list(Gnat.t(), String.t(), list(list_option())) :: {:error, any} | {:ok, list(Meta.t())}
   def list(conn, bucket_name, options \\ []) do
     with {:ok, %{config: stream}} <- Stream.info(conn, stream_name(bucket_name)) do
       consumer = %Consumer{
         stream_name: stream.name,
-        deliver_subject: Util.reply_inbox(Keyword.get(options, :inbox_prefix)),
+        deliver_subject: Util.reply_inbox(conn, Keyword.get(options, :inbox_prefix)),
         deliver_policy: :last_per_subject,
         filter_subject: meta_stream_subject(bucket_name),
         ack_policy: :none,
@@ -323,7 +323,7 @@ defmodule Gnat.Jetstream.API.Object do
     else
       consumer = %Consumer{
         stream_name: stream_name(meta.bucket),
-        deliver_subject: Util.reply_inbox(Keyword.get(opts, :inbox_prefix)),
+        deliver_subject: Util.reply_inbox(conn, Keyword.get(opts, :inbox_prefix)),
         deliver_policy: :all,
         filter_subject: chunk_stream_topic(meta),
         ack_policy: :none,

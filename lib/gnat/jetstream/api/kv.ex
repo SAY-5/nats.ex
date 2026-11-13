@@ -415,7 +415,7 @@ defmodule Gnat.Jetstream.API.KV do
   key change notifications.
 
   ## Opts
-  * `:inbox_prefix` - (default `"_INBOX."`) the prefix for the subject changes are delivered to, should end with a dot
+  * `:inbox_prefix` - (default is the connection's `inbox_prefix`) the prefix for the subject changes are delivered to, should end with a dot
 
   ## Examples
 
